@@ -1,0 +1,1379 @@
+# MASTER DEVELOPMENT PROMPT — NEUROSCRIBE ANDROID APPLICATION
+## Existing APK Audit, Feature Completion, Architecture Improvement, Stability, and Production Readiness
+
+Act as a **Principal Android Architect, Senior Kotlin Engineer, AI/ML Integration Engineer, Database Architect, Security Engineer, and QA Lead**.
+
+Your responsibility is to take my existing Android application, **NeuroScribe**, and improve it into a stable, intelligent, scalable, professional Android product.
+
+This is an existing application. It already has working features and an established codebase. Your job is to understand the current implementation, identify weaknesses and missing components, improve the architecture, and complete the Android application without unnecessarily rebuilding or damaging existing functionality.
+
+Do not treat this as a basic UI redesign. Treat it as a complete product-engineering and architecture-improvement project.
+
+---
+
+# 1. PRIMARY OBJECTIVE
+
+Transform the existing NeuroScribe Android application into a complete AI-powered personal knowledge and learning platform.
+
+The application should allow users to:
+
+1. Record lectures, meetings, discussions, and personal voice notes.
+2. Convert speech into accurate transcripts.
+3. Process transcripts using AI.
+4. Research and expand recorded information into structured, meaningful documents.
+5. Generate different document formats according to the user's purpose.
+6. Store recordings, transcripts, documents, and learning materials.
+7. Search and retrieve previously saved information.
+8. Connect concepts across multiple recordings and documents.
+9. Ask questions about their accumulated knowledge.
+10. Generate learning materials, revision resources, and assessments.
+11. Export professional documents.
+12. Access their information reliably, with a clear path toward future cloud synchronization and a web platform.
+
+The long-term direction is to make NeuroScribe a personal knowledge intelligence system rather than just an audio recorder or AI note generator.
+
+However, prioritize completing and stabilizing the Android application first.
+
+---
+
+# 2. PHASE ONE — COMPLETE EXISTING PROJECT AUDIT
+
+Before modifying anything, inspect the entire existing project.
+
+Do not start implementing features before understanding the current architecture.
+
+Inspect:
+
+- Project structure and Gradle configuration.
+- Kotlin source files.
+- AndroidManifest.xml.
+- MainActivity and navigation.
+- Jetpack Compose screens and components.
+- ViewModels and state management.
+- Audio recording and playback implementation.
+- Speech recognition and transcription.
+- Gemini API integration.
+- AI prompts and response processing.
+- Room database, entities, DAOs, and migrations.
+- Repository and data access layers.
+- File storage and media management.
+- Document generation and rendering.
+- PDF export.
+- Flashcards and spaced repetition.
+- Background services and notifications.
+- Permissions and lifecycle management.
+- Error handling and logging.
+- Existing tests and build configuration.
+
+Create an internal understanding of how every major feature works and how data moves between components.
+
+Produce an audit containing:
+
+1. Existing features that work correctly.
+2. Existing features that are partially implemented.
+3. Features that are broken.
+4. Duplicate or unnecessary implementations.
+5. Architecture problems.
+6. Database and data-integrity risks.
+7. Security vulnerabilities.
+8. Performance problems.
+9. Missing functionality.
+10. Production-readiness gaps.
+
+For every finding, identify the relevant files and explain the recommended correction.
+
+**Important rules:**
+
+- Do not delete working features.
+- Do not replace the existing architecture just because you prefer another architecture.
+- Do not create duplicate screens, services, databases, or managers.
+- Reuse existing components where practical.
+- Do not claim something works unless you have verified its implementation.
+- If something is not implemented, clearly identify it.
+- Preserve existing user data and database compatibility.
+
+After the audit, establish a prioritized implementation plan.
+
+Then execute the plan.
+
+---
+
+# 3. PHASE TWO — APPLICATION ARCHITECTURE
+
+Improve the application toward a modular, maintainable architecture.
+
+Use the existing Kotlin and Jetpack Compose foundation.
+
+Recommended architectural direction:
+
+- Presentation Layer
+- Domain Layer
+- Data Layer
+- Core/Shared Layer
+- Feature Modules or clearly separated feature packages
+
+The final architecture should separate responsibilities instead of placing application logic inside screens or MainActivity.
+
+Recommended logical structure:
+
+```text
+app/
+│
+├── core/
+│   ├── common/
+│   ├── database/
+│   ├── network/
+│   ├── storage/
+│   ├── security/
+│   ├── permissions/
+│   ├── notifications/
+│   ├── synchronization/
+│   └── errorhandling/
+│
+├── data/
+│   ├── local/
+│   ├── remote/
+│   ├── repository/
+│   └── mapper/
+│
+├── domain/
+│   ├── model/
+│   ├── repository/
+│   ├── usecase/
+│   └── service/
+│
+├── feature/
+│   ├── home/
+│   ├── capture/
+│   ├── transcription/
+│   ├── documents/
+│   ├── archive/
+│   ├── knowledge/
+│   ├── askneuroscribe/
+│   ├── research/
+│   ├── flashcards/
+│   ├── quizzes/
+│   ├── studyplan/
+│   ├── analytics/
+│   ├── settings/
+│   └── subscription/
+│
+└── MainActivity.kt
+```
+
+This is a suggested logical structure, not a requirement to move every existing file blindly.
+
+Use:
+
+- Kotlin.
+- Jetpack Compose Material 3.
+- Kotlin Coroutines.
+- StateFlow and Flow.
+- ViewModel.
+- Repository pattern.
+- Room for local persistence.
+- Dependency injection where appropriate.
+- A consistent navigation architecture.
+- Typed models instead of passing unstructured data throughout the application.
+
+Ensure each feature has clear ownership of its state, business logic, and data operations.
+
+---
+
+# 4. PHASE THREE — AUDIO RECORDING ENGINE
+
+Audio recording is one of the most important foundations of NeuroScribe.
+
+Inspect and improve the existing audio engine.
+
+Required functionality:
+
+- Start recording.
+- Pause recording.
+- Resume recording.
+- Stop recording.
+- Accurate recording duration.
+- Live recording indicator.
+- Audio level visualization.
+- RMS-based audio analysis.
+- Noise and silence detection where appropriate.
+- Reliable file storage.
+- Audio playback.
+- Playback seeking.
+- Playback speed control.
+- Recording metadata.
+- Recording rename and deletion.
+- Recording recovery where technically possible.
+
+Support long recordings, including sessions exceeding 60 minutes, without unnecessary memory consumption.
+
+### Background recording
+
+Implement proper Android background recording behavior.
+
+Verify:
+
+- Foreground microphone service.
+- Correct foreground service type.
+- Required microphone permissions.
+- Persistent recording notification.
+- Pause, resume, and stop controls.
+- Screen-lock behavior.
+- App background behavior.
+- Incoming calls and audio interruptions.
+- Permission denial handling.
+- Storage exhaustion handling.
+- Process termination recovery where possible.
+
+Do not assume that background recording works merely because the recorder works while the app is open.
+
+### Recording reliability
+
+Ensure that:
+
+- Recording does not silently stop.
+- Temporary files are handled safely.
+- File names are unique.
+- Incomplete recordings are identified.
+- Recording metadata is not lost.
+- Playback files are associated with the correct recording.
+- Recording operations are not duplicated by repeated user taps.
+
+Use appropriate audio APIs for the supported Android versions.
+
+---
+
+# 5. PHASE FOUR — TRANSCRIPTION ENGINE
+
+Improve the existing transcription system.
+
+Required capabilities:
+
+- Speech-to-text conversion.
+- Partial transcription where supported.
+- Final transcript generation.
+- Language identification.
+- Multilingual transcription.
+- Urdu and Roman Urdu handling where supported.
+- English transcription.
+- Punctuation and paragraph formatting.
+- Speaker separation where supported by the selected transcription service.
+- Transcript editing.
+- Transcript search.
+- Transcript export.
+- Transcript-to-recording association.
+
+Maintain the original transcript separately from AI-enhanced content.
+
+Never overwrite the original transcript when generating an improved version.
+
+Each transcript should retain:
+
+- Unique ID.
+- Recording ID.
+- Original text.
+- Language.
+- Creation date.
+- Duration.
+- Processing status.
+- Optional speaker information.
+- Source timestamps where available.
+
+If the existing transcription implementation has limitations, explain them and recommend the best compatible improvement.
+
+Do not claim speaker identification or perfect multilingual accuracy without implementing and testing it.
+
+---
+
+# 6. PHASE FIVE — AI INTELLIGENCE ENGINE
+
+This is the central intelligence component of NeuroScribe.
+
+Inspect the existing Gemini integration and improve it without exposing API credentials.
+
+### AI architecture
+
+Separate the following responsibilities:
+
+1. AI request management.
+2. Prompt management.
+3. Response validation.
+4. Response parsing.
+5. Document generation.
+6. Research orchestration.
+7. Knowledge retrieval.
+8. Error handling.
+9. Usage tracking.
+10. Model configuration.
+
+AI requests should not be implemented directly inside Compose screens.
+
+Use a centralized AI service layer with clearly defined interfaces.
+
+### AI processing workflow
+
+Implement a reliable processing pipeline:
+
+```text
+Audio Recording
+      ↓
+Audio Processing
+      ↓
+Speech Transcription
+      ↓
+Transcript Validation
+      ↓
+AI Understanding
+      ↓
+Contextual Expansion
+      ↓
+Research / Knowledge Retrieval
+      ↓
+Structured Document Generation
+      ↓
+Validation and Formatting
+      ↓
+Local Database Storage
+      ↓
+Document Rendering
+      ↓
+PDF / Export
+```
+
+Every processing stage should have its own status.
+
+For example:
+
+- Pending
+- Recording
+- Transcribing
+- Analyzing
+- Researching
+- Generating
+- Validating
+- Completed
+- Failed
+- Cancelled
+
+If processing fails at one stage, do not lose the original recording or transcript.
+
+Allow the user to retry the failed stage without repeating the entire workflow unnecessarily.
+
+### AI quality
+
+The AI should:
+
+- Understand the meaning of a transcript.
+- Identify key concepts.
+- Remove unnecessary repetition when appropriate.
+- Preserve important information.
+- Explain complex ideas.
+- Structure information logically.
+- Identify missing context.
+- Generate examples.
+- Provide practical explanations.
+- Distinguish facts from interpretations.
+- Avoid inventing sources or unsupported information.
+
+AI-generated research must not be presented as verified fact unless the underlying source has actually been retrieved and validated.
+
+---
+
+# 7. PHASE SIX — DOCUMENT GENERATION SYSTEM
+
+Preserve and improve the existing document-generation functionality.
+
+Support the existing document archetypes wherever they are already implemented:
+
+1. Research Dissertation.
+2. Implementation Blueprint.
+3. Executive Decision Matrix.
+4. Step-by-Step Playbook.
+5. Socratic Tutorial and Q&A.
+6. Visual Mind Map Outline.
+7. Clinical Scientific Dossier.
+8. Legal Statutory Analysis.
+9. Philosophical First Principles.
+10. Creative Narrative Essay.
+11. Custom User Specification.
+
+Do not remove existing document types.
+
+Improve document generation with:
+
+- Clear title and subtitle.
+- Executive summary where appropriate.
+- Logical headings.
+- Structured sections.
+- Important concepts.
+- Definitions.
+- Examples.
+- Practical applications.
+- Conclusions.
+- References and source information.
+- Tables where useful.
+- Visual representations where appropriate.
+
+Allow users to select:
+
+- Subject or department.
+- Document type.
+- Output language.
+- Detail level.
+- Writing style.
+- Intended audience.
+- Document purpose.
+
+Keep these selections configurable rather than hardcoding them into individual screens.
+
+### Document management
+
+Users should be able to:
+
+- Create documents.
+- Edit documents.
+- Rename documents.
+- Duplicate documents.
+- Delete documents.
+- Organize documents.
+- Search documents.
+- View document history.
+- Reprocess documents.
+- Export documents.
+
+Preserve original content and avoid accidental overwriting.
+
+---
+
+# 8. PHASE SEVEN — VISUAL INTELLIGENCE AND GRAPH GENERATION
+
+One major improvement should be the ability to generate useful visual explanations.
+
+Do not rely on the AI model to generate finished graphics as plain text.
+
+Instead, use a structured approach:
+
+```text
+AI Model
+   ↓
+Structured Visual Data
+   ↓
+Validation
+   ↓
+Android Rendering Engine
+   ↓
+Interactive or Static Visual
+```
+
+Support visual output such as:
+
+- Flowcharts.
+- Process diagrams.
+- Concept maps.
+- Mind maps.
+- Comparison charts.
+- Bar charts.
+- Line charts.
+- Pie charts.
+- Timelines.
+- Decision trees.
+- Hierarchical diagrams.
+- Step-by-step workflows.
+
+Use appropriate rendering technologies such as:
+
+- Jetpack Compose Canvas.
+- SVG rendering.
+- Mermaid-compatible rendering where practical.
+- Native chart components.
+- Custom Compose components.
+
+The AI should return validated structured data rather than arbitrary drawing instructions.
+
+For example, a chart response should contain:
+
+- Chart type.
+- Chart title.
+- Labels.
+- Data series.
+- Values.
+- Units.
+- Optional explanation.
+
+For diagrams, return structured nodes, relationships, labels, and directions.
+
+Validate all generated data before rendering.
+
+Provide graceful fallbacks if the model returns invalid or incomplete visual data.
+
+Allow visual elements to be included in exported documents when appropriate.
+
+---
+
+# 9. PHASE EIGHT — PERSONAL KNOWLEDGE VAULT
+
+This is one of the most important missing capabilities to investigate and implement.
+
+NeuroScribe should gradually become a long-term personal knowledge system.
+
+Every eligible recording, transcript, and document should be organized into a searchable knowledge vault.
+
+### Knowledge storage
+
+Store and connect:
+
+- Recordings.
+- Transcripts.
+- Documents.
+- Topics.
+- Subjects.
+- Concepts.
+- Keywords.
+- Flashcards.
+- Sources.
+- Relationships between documents.
+
+Create a proper relationship structure using unique IDs.
+
+A document should be traceable to its original transcript and recording whenever applicable.
+
+### Knowledge organization
+
+Implement:
+
+- Subject-based organization.
+- Topic-based organization.
+- Custom folders.
+- Tags.
+- Search filters.
+- Recent documents.
+- Favorites.
+- Archived content.
+- Related documents.
+- Duplicate detection where appropriate.
+
+### User control
+
+Provide settings to:
+
+- Include a document in the knowledge vault.
+- Exclude a document.
+- Delete stored knowledge.
+- Rebuild its search index.
+- Manage indexing preferences.
+
+Never silently index excluded or deleted content.
+
+### Semantic search
+
+Prepare the architecture for semantic search using embeddings.
+
+The system should support:
+
+1. Text extraction.
+2. Text chunking.
+3. Embedding generation.
+4. Vector storage.
+5. Similarity retrieval.
+6. Relevant-context selection.
+7. AI response generation.
+
+Keep the embedding provider replaceable.
+
+Do not store every document as one enormous text block for retrieval.
+
+Use meaningful chunks with source metadata.
+
+For the initial Android-only implementation, determine whether local search, local indexing, or a remote-ready interface is most practical. Do not add a complicated vector database to the APK without a justified need.
+
+---
+
+# 10. PHASE NINE — ASK NEUROSCRIBE
+
+Create or improve a dedicated feature called **Ask NeuroScribe**.
+
+Users should be able to ask questions about their saved recordings, transcripts, and documents.
+
+Examples:
+
+- What did I learn about database normalization last month?
+- Explain the difference between the concepts discussed in my last three lectures.
+- Find all my notes related to artificial intelligence.
+- Summarize everything I have recorded about digital marketing.
+- What important topics have I not revised?
+- Compare the explanations from two different lectures.
+- Create a consolidated document from my previous notes.
+
+Implement two clearly separated modes.
+
+### Mode A — My Knowledge
+
+This mode must answer using only the user's selected or indexed personal knowledge.
+
+Rules:
+
+- Retrieve relevant saved content.
+- Use actual source passages.
+- Provide source document references.
+- Include timestamps when available.
+- Never invent a source.
+- Clearly state when the saved material does not contain enough information.
+
+### Mode B — Advanced Intelligence
+
+This mode may use personal knowledge together with external research, if a supported research service is configured.
+
+Rules:
+
+- Distinguish personal knowledge from external information.
+- Provide verifiable source references.
+- Include source dates where available.
+- Avoid presenting unsupported claims as verified research.
+- Clearly identify when external research is unavailable.
+
+Allow users to select relevant documents or search across their entire knowledge vault.
+
+Store question history where appropriate.
+
+Do not create a fake Ask NeuroScribe experience that simply sends the current question to Gemini without retrieving relevant saved information.
+
+---
+
+# 11. PHASE TEN — LEARNING AND STUDY SYSTEM
+
+Improve the learning capabilities.
+
+### Flashcards
+
+Support:
+
+- AI-generated flashcards.
+- Manual flashcard creation.
+- Question and answer.
+- Topic association.
+- Difficulty level.
+- Review status.
+- Edit and delete.
+- Practice mode.
+
+### Spaced repetition
+
+Inspect the existing SM-2 implementation.
+
+Verify that:
+
+- Review history is persisted.
+- Due dates are calculated correctly.
+- Review intervals are updated correctly.
+- Failed and successful responses are handled.
+- Users can review overdue cards.
+- Cards remain associated with their source material.
+
+Do not replace a working spaced-repetition implementation without a clear reason.
+
+### Quizzes and assessments
+
+Support:
+
+- Multiple-choice questions.
+- True/false questions.
+- Short-answer questions.
+- Topic-specific quizzes.
+- Difficulty levels.
+- Answer explanations.
+- Score calculation.
+- Performance history.
+- Weak-topic identification.
+
+### Study plans
+
+Allow users to generate a study plan based on:
+
+- Selected subjects.
+- Selected topics.
+- Available study time.
+- Exam date.
+- Learning goals.
+- Existing knowledge materials.
+
+Provide a realistic study schedule.
+
+Do not generate study schedules that ignore the user's available time.
+
+---
+
+# 12. PHASE ELEVEN — SEARCH AND DISCOVERY
+
+Implement a unified search experience.
+
+Users should be able to search across:
+
+- Recording names.
+- Transcripts.
+- Documents.
+- Topics.
+- Tags.
+- Concepts.
+- Flashcards.
+
+Provide:
+
+- Keyword search.
+- Filtering.
+- Sorting.
+- Recent searches.
+- Search result previews.
+- Relevant source navigation.
+
+Prepare the search architecture for future semantic retrieval.
+
+Search results must link to the original content, not merely return disconnected text.
+
+---
+
+# 13. PHASE TWELVE — DATABASE AND DATA MANAGEMENT
+
+Inspect the existing Room database and improve it carefully.
+
+Maintain compatibility with the current schema and user data.
+
+Recommended data entities, adapted to the actual project:
+
+- RecordingEntity
+- TranscriptEntity
+- DocumentEntity
+- SubjectEntity
+- TopicEntity
+- ConceptEntity
+- SourceEntity
+- FlashcardEntity
+- QuizEntity
+- StudyPlanEntity
+- KnowledgeChunkEntity
+- ConversationEntity
+- MessageEntity
+- ProcessingJobEntity
+- UserPreferenceEntity
+- SyncMetadataEntity
+
+Do not create unnecessary entities if equivalent structures already exist.
+
+### Database requirements
+
+- Stable primary keys.
+- Foreign-key relationships where appropriate.
+- Proper indexes.
+- Database transactions.
+- Safe deletion behavior.
+- Data integrity.
+- Migration support.
+- Efficient pagination.
+- Search optimization.
+- Backup and restore strategy.
+
+All schema changes must have appropriate Room migrations.
+
+Do not use destructive migrations in production.
+
+Do not erase existing user data during development or testing.
+
+### Data lifecycle
+
+Implement clear behavior for:
+
+- Create.
+- Read.
+- Update.
+- Delete.
+- Archive.
+- Restore where supported.
+- Export.
+- Backup.
+- Retention.
+
+A deleted document should not accidentally leave broken relationships or orphaned records.
+
+---
+
+# 14. PHASE THIRTEEN — CLOUD-READY AND MULTI-DEVICE ARCHITECTURE
+
+The immediate priority is the Android application, but its architecture must support a future web application and shared cloud backend.
+
+Do not build the web application in this task.
+
+Instead, make the Android application cloud-ready.
+
+Prepare clean repository interfaces so that local storage and future remote storage can coexist.
+
+Recommended future architecture:
+
+```text
+       ANDROID APPLICATION
+               |
+               |
+       Repository Interfaces
+               |
+        Local Room Database
+               |
+         Sync Coordinator
+               |
+        Secure Backend API
+               |
+      CENTRAL CLOUD DATABASE
+               |
+       Cloud File Storage
+               |
+        AI / RAG Services
+               |
+          FUTURE WEB APP
+```
+
+Prepare for:
+
+- Account identity.
+- User-owned data.
+- Cloud file storage.
+- Remote database synchronization.
+- Offline-first functionality.
+- Sync status.
+- Conflict resolution.
+- Retry mechanisms.
+- Background synchronization.
+
+Each user's data must be isolated.
+
+Do not expose another user's recordings, transcripts, documents, or conversations.
+
+Do not put secret API keys inside the APK.
+
+Do not implement fake cloud synchronization using local storage.
+
+If a cloud backend is not configured, keep the Android application fully usable locally and expose clearly defined interfaces for future integration.
+
+---
+
+# 15. PHASE FOURTEEN — SECURITY AND PRIVACY
+
+Treat user recordings and personal documents as private data.
+
+Inspect and improve:
+
+- API credential handling.
+- Network communication.
+- Local file permissions.
+- Database access.
+- Temporary files.
+- User data deletion.
+- Export permissions.
+- Authentication readiness.
+- Error logs.
+- Sensitive information exposure.
+
+Requirements:
+
+- Never hardcode production API keys in source code.
+- Never expose secrets through logs.
+- Use HTTPS for remote requests.
+- Use secure storage for sensitive local credentials.
+- Request permissions only when needed.
+- Explain microphone access clearly.
+- Keep user files in appropriate application-controlled storage.
+- Provide clear deletion controls.
+- Avoid unnecessary data collection.
+
+If remote AI calls are made, explain which content is sent to the configured service through an appropriate privacy notice.
+
+Do not claim end-to-end encryption unless it is actually implemented.
+
+---
+
+# 16. PHASE FIFTEEN — USER INTERFACE AND EXPERIENCE
+
+Preserve NeuroScribe's established identity while improving usability.
+
+The interface should look like a professional modern productivity and knowledge application.
+
+Avoid:
+
+- Excessive animations.
+- Unnecessary gradients.
+- Cluttered screens.
+- Too many buttons.
+- Repetitive cards.
+- Unclear navigation.
+- Decorative elements that reduce readability.
+
+Use a consistent design system:
+
+- Material 3.
+- Consistent typography.
+- Consistent spacing.
+- Clear visual hierarchy.
+- Reusable components.
+- Responsive Compose layouts.
+- Light and dark themes.
+- Accessible contrast.
+- Proper loading and error states.
+
+### Recommended main navigation
+
+Evaluate the existing navigation and organize it around the following functional areas:
+
+1. Home
+2. Capture
+3. Knowledge
+4. Ask NeuroScribe
+5. Library
+
+Keep secondary functions accessible through appropriate menus or contextual navigation.
+
+### Home dashboard
+
+The dashboard should provide useful information:
+
+- Recent recordings.
+- Recently generated documents.
+- Quick recording action.
+- Pending AI processing.
+- Recent learning activity.
+- Upcoming flashcard reviews.
+- Knowledge search.
+- Processing errors requiring attention.
+
+Do not overload the home screen with every available feature.
+
+### Empty, loading, and error states
+
+Every major screen should have:
+
+- Loading state.
+- Empty state.
+- Error state.
+- Retry action where appropriate.
+- Offline state where applicable.
+- Permission-denied state where relevant.
+
+---
+
+# 17. PHASE SIXTEEN — MULTILINGUAL SUPPORT
+
+Audit the existing language support.
+
+Verify which languages are actually supported across:
+
+- Speech recognition.
+- Transcript generation.
+- AI processing.
+- Document generation.
+- Translation.
+- Search.
+- PDF export.
+
+Do not claim that every language works equally well across every stage.
+
+Allow users to choose:
+
+- Input language.
+- Output language.
+- Translation language.
+- Preferred document language.
+
+Ensure that mixed-language content is handled carefully.
+
+Pay special attention to:
+
+- Urdu.
+- Roman Urdu.
+- English.
+- Right-to-left text rendering.
+- Urdu Nastaleeq font support where available.
+- Mixed Urdu-English documents.
+- PDF layout and line wrapping.
+
+Test language output rather than relying only on the model's language selection.
+
+---
+
+# 18. PHASE SEVENTEEN — DOCUMENT EXPORT AND FILE MANAGEMENT
+
+Inspect and improve the current PDF export implementation.
+
+Support:
+
+- Professional PDF output.
+- Proper document titles.
+- Headings and subheadings.
+- Tables.
+- Lists.
+- Page breaks.
+- Headers and footers where appropriate.
+- Page numbering.
+- Images and supported diagrams.
+- Urdu and right-to-left text.
+- Consistent typography.
+
+Also assess support for:
+
+- Markdown export.
+- Plain text export.
+- Other document formats where practical.
+
+Ensure exported files are valid and readable.
+
+Handle:
+
+- Storage permissions.
+- Export failures.
+- Large documents.
+- Temporary export files.
+- File naming.
+- Duplicate exports.
+
+Never show a successful export message until the file has actually been created.
+
+---
+
+# 19. PHASE EIGHTEEN — PERFORMANCE AND RELIABILITY
+
+Optimize the application for real Android devices.
+
+Inspect:
+
+- Startup time.
+- Memory usage.
+- CPU usage.
+- Battery consumption.
+- Audio processing.
+- Large transcripts.
+- Large documents.
+- Database queries.
+- AI request handling.
+- Compose recomposition.
+- Background work.
+- File handling.
+
+Requirements:
+
+- Avoid blocking the main thread.
+- Use appropriate dispatchers.
+- Avoid unnecessary recompositions.
+- Paginate large lists.
+- Avoid loading entire audio files into memory.
+- Handle network timeouts.
+- Handle API rate limits.
+- Implement retry with appropriate backoff.
+- Avoid duplicate requests.
+- Persist important processing state.
+
+Use WorkManager for appropriate deferrable background operations.
+
+Do not use WorkManager as a replacement for a correctly implemented active microphone foreground service.
+
+---
+
+# 20. PHASE NINETEEN — AI COST AND USAGE MANAGEMENT
+
+Prepare the Android application for a future subscription-based product.
+
+Do not implement fake unlimited AI usage.
+
+Create a configurable usage-management interface.
+
+Track, where available:
+
+- AI requests.
+- Tokens or equivalent model usage.
+- Audio processing duration.
+- Research requests.
+- Storage usage.
+- Failed requests.
+- Processing history.
+
+Prepare entitlement-aware feature interfaces for:
+
+- Free.
+- Pro.
+- Premium.
+
+The actual subscription rules should eventually be enforced by a secure backend, not by client-side UI visibility alone.
+
+For now, do not invent subscription pricing or hardcode permanent limits.
+
+Keep the app usable without a paid subscription system being configured.
+
+---
+
+# 21. PHASE TWENTY — ERROR HANDLING AND OBSERVABILITY
+
+Implement a consistent error-handling system.
+
+Every major operation should have meaningful failure handling.
+
+Examples:
+
+- Microphone permission denied.
+- Recording initialization failed.
+- Audio storage unavailable.
+- Transcription failed.
+- Gemini request failed.
+- API quota exceeded.
+- Invalid AI response.
+- Document generation failed.
+- Database operation failed.
+- PDF export failed.
+- Network unavailable.
+- Synchronization failed.
+
+Provide useful user-facing messages.
+
+Do not expose internal stack traces or API credentials to users.
+
+Use structured logs for development and appropriate crash reporting only when configured.
+
+Avoid logging private transcript or recording content.
+
+---
+
+# 22. PHASE TWENTY-ONE — TESTING AND QUALITY ASSURANCE
+
+Create or improve a proper testing strategy.
+
+### Unit tests
+
+Test:
+
+- Repositories.
+- Use cases.
+- Database operations.
+- Database migrations.
+- AI response parsing.
+- Document formatting.
+- Search.
+- Knowledge retrieval.
+- Flashcard scheduling.
+- Usage calculations.
+- Processing state transitions.
+
+### Integration tests
+
+Test:
+
+- Recording to file storage.
+- Transcript persistence.
+- AI processing to document storage.
+- Database relationships.
+- PDF export.
+- Search across saved content.
+- Retry behavior.
+- Local data recovery.
+
+### UI tests
+
+Test:
+
+- Navigation.
+- Recording controls.
+- Permission handling.
+- Document editing.
+- Search.
+- Flashcards.
+- Export.
+- Empty states.
+- Error states.
+
+### Device scenarios
+
+Verify behavior across relevant Android versions and screen sizes.
+
+Test:
+
+- Screen locked during recording.
+- App sent to background.
+- App reopened after interruption.
+- Long recording.
+- Poor network.
+- Offline operation.
+- Low storage.
+- Permission denial.
+- Repeated taps.
+- Large documents.
+- Process recreation.
+
+Run the available build and test commands.
+
+Report actual results.
+
+Never state that tests passed if they were not executed.
+
+---
+
+# 23. PHASE TWENTY-TWO — FINAL APPLICATION AUDIT
+
+When implementation is complete, perform another full audit.
+
+Provide a final report with these sections:
+
+### A. Architecture
+
+- Final project structure.
+- Main architectural decisions.
+- Major services and repositories.
+- Database structure.
+- AI integration architecture.
+- Storage architecture.
+
+### B. Feature completion
+
+For every major feature, mark it as:
+
+- Fully implemented and tested.
+- Implemented but not fully tested.
+- Partially implemented.
+- Not implemented.
+- Requires external configuration.
+
+### C. Existing functionality preserved
+
+List the existing features that remain functional.
+
+### D. New functionality
+
+List the improvements and new features implemented.
+
+### E. Bugs and limitations
+
+List all unresolved problems.
+
+### F. Security
+
+Explain API-key handling, data protection, permissions, and privacy considerations.
+
+### G. Performance
+
+Report any identified performance issues and improvements.
+
+### H. Testing
+
+Provide actual build, test, and device-test results.
+
+### I. Production readiness
+
+Identify anything that still requires external setup, such as:
+
+- Backend deployment.
+- API credentials.
+- Firebase configuration.
+- Authentication.
+- Subscription configuration.
+- Play Console setup.
+- Privacy policy.
+- Store assets.
+
+### J. APK delivery
+
+If the environment supports building the Android application:
+
+1. Build a release APK.
+2. Verify that the APK was actually generated.
+3. Report the exact file location.
+4. Report the build variant.
+5. Report any signing requirements.
+6. Do not claim that the application is Play Store ready if release signing, testing, or required external configuration is incomplete.
+
+---
+
+# 24. STRICT IMPLEMENTATION RULES
+
+Follow these rules throughout the project.
+
+1. Inspect before modifying.
+2. Preserve existing working features.
+3. Never rebuild the entire application unnecessarily.
+4. Do not delete existing database records.
+5. Never use destructive database migrations.
+6. Never hardcode production API credentials.
+7. Do not put AI logic directly inside UI components.
+8. Avoid duplicate services and repositories.
+9. Use reusable components and centralized configuration.
+10. Keep processing operations recoverable.
+11. Keep original recordings and transcripts intact.
+12. Validate all AI-generated structured data.
+13. Never invent research references.
+14. Never display fake progress or success messages.
+15. Do not create nonfunctional buttons or placeholder features that appear complete.
+16. Do not claim that cloud synchronization exists until it is connected and verified.
+17. Do not claim that a feature works until it has been tested.
+18. Keep Android functionality independent of the future web application.
+19. Keep future backend integration possible through clean interfaces.
+20. Make changes incrementally and verify the project after each major phase.
+
+If you encounter a feature that requires an external API, backend, credential, or service that is not configured, implement the appropriate interface and local behavior where possible, and clearly document the remaining requirement.
+
+Do not silently replace an unavailable capability with a fake implementation.
+
+---
+
+# 25. EXECUTION STRATEGY
+
+Work in the following order:
+
+**Stage 1 — Audit**
+Inspect the entire project and produce the existing architecture report.
+
+**Stage 2 — Stabilization**
+Fix critical bugs, recording reliability, transcription reliability, database safety, and existing feature regressions.
+
+**Stage 3 — Architecture**
+Improve separation of concerns, repositories, services, state management, and dependency management.
+
+**Stage 4 — Core AI**
+Improve AI processing, document generation, structured output validation, and visual rendering.
+
+**Stage 5 — Knowledge System**
+Implement the personal knowledge vault, indexing foundation, unified search, and document relationships.
+
+**Stage 6 — Ask NeuroScribe**
+Implement knowledge-grounded question answering with source attribution.
+
+**Stage 7 — Learning System**
+Complete flashcards, spaced repetition, quizzes, and study plans.
+
+**Stage 8 — Experience**
+Improve navigation, dashboard, document viewing, accessibility, and multilingual experience.
+
+**Stage 9 — Security and Performance**
+Improve privacy, API handling, memory use, background work, and reliability.
+
+**Stage 10 — Final Verification**
+Run builds, tests, migrations checks, and final architecture audit.
+
+Do not attempt to implement every stage in one uncontrolled change.
+
+Complete each stage, verify it, and then move to the next.
+
+If the project environment cannot complete all stages in one session, maintain a clear implementation checklist and continue from the last verified stage without repeating completed work.
+
+---
+
+# FINAL PRODUCT STANDARD
+
+The finished Android application should feel like a complete, reliable product.
+
+A user should be able to:
+
+1. Record a lecture or discussion.
+2. Receive a transcript.
+3. Generate a detailed, structured document.
+4. Produce useful diagrams and visual explanations.
+5. Save everything in an organized personal knowledge vault.
+6. Find information from previous recordings.
+7. Ask questions across saved materials.
+8. Connect concepts across multiple documents.
+9. Generate flashcards and quizzes.
+10. Prepare for examinations.
+11. Export professional documents.
+12. Continue using the application reliably across sessions.
+
+**The ultimate objective is to make NeuroScribe a dependable personal knowledge and learning intelligence application, built on a stable Android foundation and prepared for a future multi-user cloud and web ecosystem.**
+
+Start by auditing the existing project. Do not begin with a redesign or a fresh implementation. Preserve, improve, complete, and verify the application that already exists.

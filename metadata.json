@@ -1,0 +1,8 @@
+{
+  "name": "NeuroScribe Pro",
+  "description": "Executive Cognitive AI voice intelligence, extended speech synthesis, spaced repetition mastery, and grounded knowledge Q&A.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}

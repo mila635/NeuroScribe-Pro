@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">NeuroScribe Pro</string>
+    <string name="shortcut_voice_short">Record Voice</string>
+    <string name="shortcut_voice_long">Start Live Voice Recording</string>
+    <string name="shortcut_camera_short">Scan Document</string>
+    <string name="shortcut_camera_long">Capture Slide or Document</string>
+    <string name="shortcut_archive_short">Archive</string>
+    <string name="shortcut_archive_long">Browse Knowledge Archive</string>
+    <string name="widget_title">Voice Intelligence Quick Hub</string>
+    <string name="widget_description">One-tap instant audio recording and document intake</string>
+</resources>
